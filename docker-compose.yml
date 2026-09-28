@@ -1,0 +1,35 @@
+services:
+  auth:
+    build: .
+    command: uvicorn services.auth_service:app --host 0.0.0.0 --port 8001
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./keys:/app/keys
+
+  policy:
+    build: .
+    command: uvicorn services.policy_service:app --host 0.0.0.0 --port 8002
+    ports:
+      - "8002:8002"
+
+  resource:
+    build: .
+    command: uvicorn services.resource_service:app --host 0.0.0.0 --port 8003
+    ports:
+      - "8003:8003"
+
+  gateway:
+    build: .
+    command: uvicorn services.gateway:app --host 0.0.0.0 --port 8000
+    environment:
+      AUTH_PUBLIC_KEY_PATH: /app/keys/public.pem
+      POLICY_URL: http://policy:8002
+      RESOURCE_URL: http://resource:8003
+    depends_on:
+      - policy
+      - resource
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./keys:/app/keys
