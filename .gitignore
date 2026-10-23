@@ -1,6 +1,5 @@
 .venv/
 __pycache__/
 *.pyc
-results/
 keys/private.pem
 keys/public.pem
